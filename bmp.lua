@@ -175,7 +175,8 @@ while i > offset do
 	b = bit32.band(pixel, 31)
 	r, g, b = rgb555torgb888(r,g,b)
 	color = colors.fromRGB2(r, g, b)
-
+	
+	-- Draw the pixel
 	monitor.setTextColor(color)
 	monitor.write(string.char(143, 143))
 	x=x-1
