@@ -143,8 +143,8 @@ while i >= 0 do
 	i=i-1
 end
 -- Give up if bit depth isn't 16, i can't be bothered to deal with this
-if bmp_bpp ~= 16 then
-	print("Error: Bit depths other than 16 bpp are not supported")
+if bmp_bpp ~= 16 and bmp_bpp ~= 24 then
+	print("Error: Bit depths other than 16bpp and 24bpp are not supported")
 	return 1
 end
 
@@ -177,18 +177,30 @@ monitor.setCursorPos(x,y)
 -- Draw the image
 i=filesize
 while i > offset do
-	-- Get a pixel
-	pixel = bit32.bor(bit32.lshift(string.byte(string.sub(bitmap, i, i)), 8),
-			  string.byte(string.sub(bitmap, i-1, i-1)))
+	-- Get pixel
+	-- If the image is 16bpp, get the color in RGB555 and convert it to RGB888
+	-- If it's 24bpp, just get the color in RGB888 directly
+		if bmp_bpp == 16 then
+			-- Get a 16-bit pixel
+			pixel = bit32.bor(bit32.lshift(string.byte(string.sub(bitmap, i, i)), 8),
+					  string.byte(string.sub(bitmap, i-1, i-1)))
+			r = bit32.band(bit32.rshift(pixel, 10), 31)
+			g = bit32.band(bit32.rshift(pixel, 5), 31)
+			b = bit32.band(pixel, 31)
+			r, g, b = rgb555torgb888(r,g,b)
+		else if bmp_bpp == 24 then
+			-- Get a 24-bit pixel
+			pixel = bit32.bor(bit32.lshift(string.byte(string.sub(bitmap, i-2, i-2)), 16),
+					  bit32.lshift(string.byte(string.sub(bitmap, i-1, i-1)), 8),
+					  string.byte(string.sub(bitmap, i, i)))
+			r = bit32.band(pixel, 255)
+			g = bit32.band(bit32.rshift(pixel, 8), 255)
+			b = bit32.band(bit32.rshift(pixel, 16), 255)
 
-	-- Get the color in RGB555 and convert it to RGB888
-	r = bit32.band(bit32.rshift(pixel, 10), 31)
-	g = bit32.band(bit32.rshift(pixel, 5), 31)
-	b = bit32.band(pixel, 31)
-	r, g, b = rgb555torgb888(r,g,b)
-	
-	-- Draw the pixel
+		end
+	end -- ???
 	if color then
+		-- Draw the pixel
 		drawpixel(x, y, r, g, b)
 	else
 		monitor.setCursorPos(x, y)
@@ -203,7 +215,11 @@ while i > offset do
 		break
 	end
 	monitor.setCursorPos(x,y)
-	i=i-2
+	if bmp_bpp == 16 then
+		i=i-2
+	elseif bmp_bpp == 24 then
+		i=i-3
+	end
 	if i % 200 == 0 then
 		sleep(0)
 	end

@@ -1,10 +1,11 @@
 # computercraft-bmp
-ComputerCraft-BMP is a Windows bitmap viewer in ComputerCraft.
+ComputerCraft-BMP is a bitmap viewer in ComputerCraft.
 
 ## Requirements
 * A computer (any computer will do)
 * A monitor (any monitor of any size will do but an advanced monitor is recommended due to it having color)
-* A 16bpp RGB555 bitmap (RGB565 might technically work but the colors will be messed up)
+* Either a 16bpp RGB555 bitmap (RGB565 might technically work but the colors will be messed up)
+or a 24bpp RGB888 bitmap
 
 ## How to use
 (Copied from the output of the help command)
