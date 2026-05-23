@@ -8,8 +8,11 @@ ComputerCraft-BMP is a Windows bitmap viewer in ComputerCraft.
 
 ## How to use
 (Copied from the output of the help command)
+
 Usage: `bmp <PATH TO BITMAP>/<--help>/<-h> [--nocolor]`
+
 \<PATH TO BITMAP\>: The path to a bitmap file, duh.
+
 \[--nocolor\]: Specifies if the image should be drawn in color (no color makes the image draw faster) (optional).
 
 ## Credits
