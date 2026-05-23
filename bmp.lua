@@ -1,5 +1,5 @@
 bit32 = require("bit32")
-
+--[ Functions ]--
 -- Credits to CrazedProgrammer for this function (and init code for the function)
 local hex = {"F0F0F0", "F2B233", "E57FD8", "99B2F2", "DEDE6C", "7FCC19", "F2B2CC",
             "4C4C4C", "999999", "4C99B2", "B266E5", "3366CC", "7F664C", "57A64E",
@@ -36,22 +36,34 @@ colors.fromRGB2 = function (r, g, b)
   return 2 ^ color1, 2 ^ color2
 end
 
--- Convenience function to convert from RGB555 to RGB888
+-- Function to convert from RGB555 to RGB888
 function rgb555torgb888(r, g, b)
 	r = bit32.bor(bit32.lshift(r, 3), bit32.rshift(r, 2))
 	g = bit32.bor(bit32.lshift(g, 3), bit32.rshift(g, 2))
 	b = bit32.bor(bit32.lshift(b, 3), bit32.rshift(b, 2))
 	return r, g, b
 end
+
+-- Function to draw a "pixel" (really it's extended ASCII character 143)
+function drawpixel(x, y, r, g, b)
+	color = colors.fromRGB2(r, g, b)
+	monitor.setTextColor(color)
+	monitor.write(string.char(143))
+	monitor.setTextColor(1)
+end
  
-colors.toRGB = function(color)
-  return unpack(rgb[math.floor(math.log(color) / math.log(2) + 1)])
+--[ This section opens the file if it's specified, and checks if it's valid ]--
+if arg[1] == nil or arg[1] == "--help" or arg[1] == "-h" then
+	print("Usage: "..arg[0].." <PATH TO BITMAP>/<--help>/<-h> [--nocolor]")
+	print("<PATH TO BITMAP>: The path to a bitmap file, duh.")
+	print("[--nocolor]: Specifies if the image should be drawn in color (no color makes the image draw faster) (optional).")
+	return 1
 end
 
---[ This section opens the file if it's specified, and checks if it's valid ]--
-if arg[1] == nil then
-	print("Error: No file was specified")
-	return 1
+-- Check if the user wants the image to be drawn in color
+color = true
+if arg[2] == "--nocolor" then
+	color = false
 end
 
 f = assert(io.open(arg[1], "rb"))
@@ -168,17 +180,20 @@ while i > offset do
 	-- Get a pixel
 	pixel = bit32.bor(bit32.lshift(string.byte(string.sub(bitmap, i, i)), 8),
 			  string.byte(string.sub(bitmap, i-1, i-1)))
-	
-	-- Get the color in RGB555 and convert it to RGB888 then to a ComputerCraft color
+
+	-- Get the color in RGB555 and convert it to RGB888
 	r = bit32.band(bit32.rshift(pixel, 10), 31)
 	g = bit32.band(bit32.rshift(pixel, 5), 31)
 	b = bit32.band(pixel, 31)
 	r, g, b = rgb555torgb888(r,g,b)
-	color = colors.fromRGB2(r, g, b)
 	
 	-- Draw the pixel
-	monitor.setTextColor(color)
-	monitor.write(string.char(143, 143))
+	if color then
+		drawpixel(x, y, r, g, b)
+	else
+		monitor.setCursorPos(x, y)
+		monitor.write(string.char(pixel%256))
+	end
 	x=x-1
 	if x == 0 then
 		x = bmp_width

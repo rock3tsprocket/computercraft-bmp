@@ -7,7 +7,10 @@ ComputerCraft-BMP is a Windows bitmap viewer in ComputerCraft.
 * A 16bpp RGB555 bitmap (RGB565 might technically work but the colors will be messed up)
 
 ## How to use
-Just do `bmp [PATH TO BITMAP]`, replacing "[PATH TO BITMAP]" with the path to a bitmap image.
+(Copied from the output of the help command)
+Usage: `bmp <PATH TO BITMAP>/<--help>/<-h> [--nocolor]`
+\<PATH TO BITMAP\>: The path to a bitmap file, duh.
+\[--nocolor\]: Specifies if the image should be drawn in color (no color makes the image draw faster) (optional).
 
 ## Credits
 Special thanks to CrazedProgrammer for their [RGB888 to ComputerCraft color conversion function](https://ccf.squiddev.cc/topic/23048-rgb-api--convert-rgb-colors-to-computercraft-colors-and-back.html).
